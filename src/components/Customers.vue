@@ -31,7 +31,7 @@
         <v-spacer></v-spacer>
         <v-dialog
           v-model="dialog"
-          max-width="500px"
+          max-width="700px"
         >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -99,7 +99,7 @@
                 Cancelar
               </v-btn>
               <v-btn
-                color="blue darken-1"
+                color="green darken-1"
                 text
                 @click="save"
               >
@@ -110,7 +110,6 @@
         </v-dialog>
         <v-dialog v-model="modalContacts" max-width="800px">
               <Contacts :customerId="customerContacts" :key="customerContacts" />
-
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
@@ -159,6 +158,152 @@
       </v-btn>
     </template>
     </v-data-table>
+    <br>
+
+    <p> 
+      País seleccionado: <b>{{selected || 'No ha seleccionado'}}</b>
+    </p>
+    <v-autocomplete
+      v-model="selected"
+      hint="Ingrese las iniciales de su pais..."
+      placeholder="Seleccione un pais"
+      :items="items"
+      hide-no-data
+      clearable
+    >
+    </v-autocomplete>
+    <span style="color:red">
+      {{errorSelected}}
+    </span>
+    <br>
+    <br>
+      <v-stepper v-model="primerPaso">
+      <v-stepper-header>
+        <v-stepper-step
+          :complete="primerPaso > 1"
+          step="1"
+        >
+          Name of step 1
+        </v-stepper-step>
+
+        <v-divider></v-divider>
+
+        <v-stepper-step
+          :complete="primerPaso > 2"
+          step="2"
+        >
+          Name of step 2
+        </v-stepper-step>
+
+        <v-divider></v-divider>
+
+        <v-stepper-step step="3">
+          Name of step 3
+        </v-stepper-step>
+      </v-stepper-header>
+
+      <v-stepper-items>
+        <v-stepper-content step="1">
+          <v-card
+            class="mb-12"
+            color="white"
+            height="300px"
+          >
+          <v-card-text>
+            <v-container>
+              <v-row>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      label="Nombre"
+                      autocomplete="off"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      label="Dirección"
+                      autocomplete="off"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="6"
+                    md="4"
+                  >
+                    <v-text-field
+                      label="Teléfono"
+                      autocomplete="off"
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+          </v-card>
+
+          <v-btn
+            color="primary"
+            @click="primerPaso = 2"
+          >
+            Continue
+          </v-btn>
+
+          <v-btn text>
+            Cancel
+          </v-btn>
+        </v-stepper-content>
+
+        <v-stepper-content step="2">
+          <v-card
+            class="mb-12"
+            color="grey lighten-1"
+            height="200px"
+          ></v-card>
+
+          <v-btn
+            color="primary"
+            @click="primerPaso = 3"
+          >
+            Continue
+          </v-btn>
+
+          <v-btn text
+            color="secundary"
+            @click="primerPaso = 1"
+          >
+            Cancel
+          </v-btn>
+        </v-stepper-content>
+
+        <v-stepper-content step="3">
+          <v-card
+            class="mb-12"
+            color="grey lighten-1"
+            height="200px"
+          ></v-card>
+
+          <v-btn
+            color="primary"
+            @click="primerPaso = 1"
+          >
+            Continue
+          </v-btn>
+
+          <v-btn text
+            color="secundary"
+            @click="primerPaso = 2"
+          >
+            Cancel
+          </v-btn>
+        </v-stepper-content>
+      </v-stepper-items>
+    </v-stepper>
   </div>
 </template>
 
@@ -177,7 +322,7 @@ export default {
         { text: 'Dirección', value: 'Address' },
         { text: 'Telefono', value: 'Phone' },
         { text: 'Fecha creación', value: 'CreationDate' },
-        { text: 'Actions', value: 'actions', sortable: false }
+        { text: 'Acciones', value: 'actions', sortable: false }
       ],
       customers: [],
       editedIndex: -1,
@@ -195,7 +340,11 @@ export default {
       successMessage: '',
       errorAlert: false,
       errorMessage: '',
-      customerContacts: 0
+      customerContacts: 0,
+      items: ['Albania', 'Alemania', 'Andorra', 'Argentina','Austria', 'Azerbaiyán', 'Bielorrusia', 'Bélgica','Bolivia', 'Bosnia-Herzegovina', 'Brasil', 'Bulgaria'],
+      errorSelected: null,
+      selected: null,
+      primerPaso: 1
     }),
 
     components: {
@@ -228,6 +377,10 @@ export default {
 
         setTimeout(() => (this.errorAlert = false), 2500)
       },
+      selected() {
+        this.validate()
+      }
+      
     },
 
     created () {
@@ -334,7 +487,11 @@ export default {
         }
         this.close()
       },
-    },
+
+      validate () {
+        this.errorSelected = !this.selected ? "Este campo es requerido" : null
+      }
+    }
   }
 </script>
 
